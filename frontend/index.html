@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Debugger — Autonomous Code Intelligence</title>
+  <meta name="description" content="AI-powered code debugging. Clone any public Git repository, index its code with hybrid retrieval, and let the AI agent diagnose bugs with pinpoint evidence.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Particle Canvas Background -->
+  <canvas id="particle-canvas"></canvas>
+
+  <!-- ═══════════════════════════════════ HEADER ════════════════ -->
+  <header id="app-header">
+    <div class="header-left">
+      <div class="logo-icon">🤖</div>
+      <span class="logo-text">AI DEBUGGER</span>
+      <span class="logo-badge">BETA</span>
+    </div>
+
+    <nav class="header-nav">
+      <button class="nav-btn active" data-view="workspace" id="nav-workspace">Workspace</button>
+      <button class="nav-btn" data-view="evaluation" id="nav-evaluation">Evaluation</button>
+    </nav>
+
+    <div class="header-right">
+      <span id="system-status" class="status-indicator">
+        <span class="status-dot"></span>
+        <span class="status-label">Connecting…</span>
+      </span>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════ WORKSPACE VIEW ════════════ -->
+  <main id="view-workspace" class="view active-view">
+
+    <!-- ─── IDLE: Hero + Input Panel ─── -->
+    <section id="input-panel" class="panel">
+
+      <!-- Hero heading -->
+      <div class="hero-heading">
+        <span class="hero-eyebrow">Powered by Hybrid RAG + LLM Agents</span>
+        <h1 class="hero-title">Debug Any Repo.<br>Instantly.</h1>
+        <p class="hero-sub">
+          Paste a public GitHub URL, describe the bug — our AI agent clones, indexes,
+          retrieves relevant code, and delivers a pinpoint root-cause diagnosis.
+        </p>
+      </div>
+
+      <!-- Capability pills -->
+      <div class="capability-pills">
+        <span class="pill"><span class="pill-dot"></span>BM25 + Semantic Retrieval</span>
+        <span class="pill"><span class="pill-dot"></span>RRF Fusion</span>
+        <span class="pill"><span class="pill-dot"></span>Groq LLM Agent</span>
+        <span class="pill"><span class="pill-dot"></span>Real-time SSE Streaming</span>
+        <span class="pill"><span class="pill-dot"></span>Evidence Extraction</span>
+      </div>
+
+      <!-- Input Card -->
+      <div class="input-card">
+        <div class="input-group">
+          <label for="repo-url">
+            <span class="label-icon">🔗</span>
+            Repository URL
+          </label>
+          <input
+            type="url"
+            id="repo-url"
+            placeholder="https://github.com/owner/repo.git"
+            spellcheck="false"
+            autocomplete="off"
+          >
+        </div>
+
+        <div class="input-divider"></div>
+
+        <div class="input-group">
+          <label for="bug-desc">
+            <span class="label-icon">🐛</span>
+            Bug Description
+          </label>
+          <textarea
+            id="bug-desc"
+            placeholder="Describe the bug you want to investigate — be specific about symptoms, affected features, or unexpected behavior…"
+            rows="4"
+            spellcheck="false"
+          ></textarea>
+        </div>
+
+        <div class="form-footer">
+          <span class="form-hint">⚡ Results stream live as the agent works</span>
+          <button id="btn-start" class="btn-primary" disabled>
+            <span class="btn-label">Start Debugging</span>
+            <span class="btn-spinner"></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Stats row -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-value">Hybrid</div>
+          <div class="stat-label">Retrieval Strategy</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">87.5%</div>
+          <div class="stat-label">MRR@5 Score</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">&lt;5s</div>
+          <div class="stat-label">Avg Index Time</div>
+        </div>
+      </div>
+
+      <!-- How It Works -->
+      <div class="how-it-works">
+        <p class="how-title">How It Works</p>
+        <div class="steps-row">
+          <div class="step-card">
+            <span class="step-number">1</span>
+            <span class="step-icon">📥</span>
+            <span class="step-name">Clone</span>
+            <span class="step-desc">Repo is git-cloned into a secure temp directory</span>
+          </div>
+          <div class="step-card">
+            <span class="step-number">2</span>
+            <span class="step-icon">🗂️</span>
+            <span class="step-name">Index</span>
+            <span class="step-desc">Python files chunked & embedded into ChromaDB</span>
+          </div>
+          <div class="step-card">
+            <span class="step-number">3</span>
+            <span class="step-icon">🔍</span>
+            <span class="step-name">Retrieve</span>
+            <span class="step-desc">Hybrid BM25 + semantic search finds relevant code</span>
+          </div>
+          <div class="step-card">
+            <span class="step-number">4</span>
+            <span class="step-icon">🤖</span>
+            <span class="step-name">Diagnose</span>
+            <span class="step-desc">LLM agent reasons over evidence & returns root cause</span>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ─── Results Container ─── -->
+    <section id="results-container" class="panel hidden">
+
+      <!-- Banner -->
+      <div id="results-header">
+        <div class="results-repo">
+          <span class="label">Repository</span>
+          <span id="result-repo-url" class="mono"></span>
+        </div>
+        <div class="results-problem">
+          <span class="label">Investigating</span>
+          <p id="result-problem"></p>
+        </div>
+      </div>
+
+      <!-- Three-column grid -->
+      <div id="results-grid">
+
+        <!-- LEFT: Files -->
+        <aside id="panel-files" class="result-panel">
+          <h3 class="panel-title">📁 Files</h3>
+          <ul id="file-list" class="file-list">
+            <li class="mono" style="color:var(--text-muted)">—</li>
+          </ul>
+        </aside>
+
+        <!-- CENTER: Diagnosis -->
+        <div id="panel-diagnosis" class="result-panel">
+          <div id="diagnosis-placeholder" class="placeholder-msg">
+            <div class="scan-orb"></div>
+            <span>Analyzing repository…</span>
+          </div>
+          <div id="diagnosis-content" class="hidden">
+            <h3 class="panel-title">🧠 Root Cause</h3>
+            <div id="diagnosis-text"></div>
+
+            <div id="evidence-section" class="hidden">
+              <h3 class="panel-title" style="margin-top: var(--s-5)">🔬 Evidence</h3>
+              <div id="evidence-list"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: Activity -->
+        <aside id="panel-activity" class="result-panel">
+          <h3 class="panel-title">
+            ⚡ Agent Activity
+            <span id="event-count" class="badge">0</span>
+          </h3>
+          <div id="activity-timeline"></div>
+        </aside>
+
+      </div>
+
+      <!-- Metrics bar -->
+      <div id="metrics-bar" class="hidden">
+        <div class="metric">
+          <span class="metric-label">Iterations</span>
+          <span id="m-iterations" class="metric-value mono">—</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Tool Calls</span>
+          <span id="m-tool-calls" class="metric-value mono">—</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Files</span>
+          <span id="m-files" class="metric-value mono">—</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Chunks</span>
+          <span id="m-chunks" class="metric-value mono">—</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Tokens</span>
+          <span id="m-tokens" class="metric-value mono">—</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Cost</span>
+          <span id="m-cost" class="metric-value mono">—</span>
+        </div>
+      </div>
+
+      <!-- Terminal log -->
+      <details id="terminal-section">
+        <summary class="terminal-header">
+          <div class="term-dots">
+            <span class="term-dot term-dot-red"></span>
+            <span class="term-dot term-dot-yellow"></span>
+            <span class="term-dot term-dot-green"></span>
+          </div>
+          <span style="flex:1; padding-left: 8px;">Agent Terminal</span>
+          <span id="terminal-count" class="badge mono">0 events</span>
+        </summary>
+        <div id="terminal-log" class="terminal-body"></div>
+      </details>
+
+      <!-- Actions -->
+      <div id="results-actions">
+        <button id="btn-reset" class="btn-secondary">← New Debug</button>
+      </div>
+    </section>
+
+    <!-- ─── Error state ─── -->
+    <section id="error-panel" class="panel hidden">
+      <div class="error-box">
+        <div class="error-icon">⚠️</div>
+        <h3>Debug Failed</h3>
+        <p id="error-message"></p>
+        <div id="error-details" class="mono hidden"></div>
+        <button id="btn-retry" class="btn-secondary">Try Again</button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ═══════════════════════════════ EVALUATION VIEW ══════════ -->
+  <main id="view-evaluation" class="view">
+    <section class="panel">
+      <h2 class="section-title">📊 Retrieval Evaluation</h2>
+      <div id="eval-loading" class="placeholder-msg">
+        <span class="scan-line"></span>
+        Loading evaluation data…
+      </div>
+      <div id="eval-content" class="hidden">
+        <div id="eval-meta" class="eval-meta"></div>
+        <table id="eval-table" class="eval-table">
+          <thead>
+            <tr>
+              <th>Metric</th>
+              <th>Baseline (BM25)</th>
+              <th>Improved (Hybrid)</th>
+              <th>Unit</th>
+            </tr>
+          </thead>
+          <tbody id="eval-tbody"></tbody>
+        </table>
+        <div id="eval-notes"></div>
+      </div>
+      <div id="eval-error" class="hidden error-box"></div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

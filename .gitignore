@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+.pytest_cache/
+venv/
+env/
+.venv/
+chroma_db/
+backend/chroma_db/
+*.db
+*.sqlite3
+superpowers-tmp/
